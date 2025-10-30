@@ -56,10 +56,10 @@ struct ST {
   }
 } t;
 
-// id of span {i, i} is i
+// id of spann {i, i} is i
 int p[N];
 pair<int, int> range[N * 2]; // range of permutation values
-pair<int, int> span[N * 2]; // range of permutation indices
+pair<int, int> spann[N * 2]; // range of permutation indices
 vector<int> pt[N * 2]; //directed permutation tree
 int par[N * 2];
 int ty[N * 2]; // 0 if cut node and 1 if increasing join node, 2 if decreasing join node
@@ -105,7 +105,7 @@ int build(int n) { //returns root of the tree
 
     // handle stack updates
     range[i] = {p[i], p[i]};
-    span[i] = {i, i};
+    spann[i] = {i, i};
     int cur = i;
 
     while (true) {
@@ -114,7 +114,7 @@ int build(int n) { //returns root of the tree
             (adjacent(cur, nodes.back()) && ty[nodes.back()] == 2)) {
           add_edge(nodes.back(), cur);
           range[nodes.back()] = get_range(range[nodes.back()], range[cur]);
-          span[nodes.back()] = get_range(span[nodes.back()], span[cur]);
+          spann[nodes.back()] = get_range(spann[nodes.back()], spann[cur]);
           cur = nodes.back();
           nodes.pop_back();
         } else { //make a new join node
@@ -122,25 +122,25 @@ int build(int n) { //returns root of the tree
           add_edge(id, nodes.back());
           add_edge(id, cur);
           range[id] = get_range(range[nodes.back()], range[cur]);
-          span[id] = get_range(span[nodes.back()], span[cur]);
+          spann[id] = get_range(spann[nodes.back()], spann[cur]);
           nodes.pop_back();
           cur = id++;
         }
       } else if (i - (length(cur) - 1) && t.query(1, 1, n, 1, i - length(cur)) == 0) {
         int len = length(cur);
         pair<int, int> r = range[cur];
-        pair<int, int> s = span[cur];
+        pair<int, int> s = spann[cur];
         add_edge(id, cur);
         do {
           len += length(nodes.back());
           r = get_range(r, range[nodes.back()]);
-          s = get_range(s, span[nodes.back()]);
+          s = get_range(s, spann[nodes.back()]);
           add_edge(id, nodes.back());
           nodes.pop_back();
         } while (r.second - r.first + 1 != len);
         reverse(pt[id].begin(), pt[id].end());
         range[id] = r;
-        span[id] = s;
+        spann[id] = s;
         cur = id++;
       } else {
         break;
@@ -189,21 +189,22 @@ int32_t main() {
     }
     int u = l;
     for (int k = LG - 1; k >= 0; k--) {
-      if (P[u][k] && span[P[u][k]].second < r) u = P[u][k];
+      if (P[u][k] && spann[P[u][k]].second < r) u = P[u][k];
     }
     u = P[u][0];
     if (ty[u] == 0) {
-      cout << span[u].first << ' ' << span[u].second << '\n';
+      cout << spann[u].first << ' ' << spann[u].second << '\n';
       continue;
     }
     int curl = -1, curr = pt[u].size();
     for (int k = LG - 1; k >= 0; k--) {
-      if (curl + (1 << k) < pt[u].size() && span[pt[u][curl + (1 << k)]].second < l) curl += 1 << k;
-      if (curr - (1 << k) >= 0 && r < span[pt[u][curr - (1 << k)]].first) curr -= 1 << k;
+      if (curl + (1 << k) < pt[u].size() && spann[pt[u][curl + (1 << k)]].second < l) curl += 1 << k;
+      if (curr - (1 << k) >= 0 && r < spann[pt[u][curr - (1 << k)]].first) curr -= 1 << k;
     }
-    cout << span[pt[u][curl + 1]].first << ' ' << span[pt[u][curr - 1]].second << '\n';
+    cout << spann[pt[u][curl + 1]].first << ' ' << spann[pt[u][curr - 1]].second << '\n';
   }
   return 0;
 }
 // https://codeforces.com/gym/101620, Problem I
 // https://codeforces.com/blog/entry/78898
+
