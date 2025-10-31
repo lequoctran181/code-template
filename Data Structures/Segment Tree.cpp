@@ -39,7 +39,7 @@ struct ST {
     int R = query(r, mid + 1, e, i, j);
     return max(L, R);
   }
-}t;
+};
 
 int32_t main() {
   ios_base::sync_with_stdio(0);
@@ -47,3 +47,4 @@ int32_t main() {
   
   return 0;
 }
+
